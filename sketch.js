@@ -21,11 +21,11 @@ function setup() {
 
   correctButton = select('#correctButton');
   correctButton.style('display', 'inline'); 
-  correctButton.mousePressed(() => { saveClassification(true); });
+  correctButton.mousePressed(() => { saveClassification(true, resultDiv, img); });
 
   incorrectButton = select('#incorrectButton');
   incorrectButton.style('display', 'inline');
-  incorrectButton.mousePressed(() => { saveClassification(false); });
+  incorrectButton.mousePressed(() => { saveClassification(false, resultDiv, img); });
 
   classifier = ml5.imageClassifier('MobileNet', () => {
     console.log('Image Classifier geladen.');
@@ -79,13 +79,34 @@ function gotResult(error, results) {
     // Confidence als Balkendiagramm darstellen
     showConfidenceBar(confidence);
     
-    // Restlicher Code...
+    // Anzeige des Balkendiagramms mit Prozentzahl
+    let confidenceString = nf(confidence, 0, 2) + '%';
+    let confidenceDiv = createDiv(confidenceString);
+    confidenceDiv.position(dropZone.position().x + 200, dropZone.position().y + dropZone.height + 10);
+    confidenceDiv.style('text-align', 'center');
   }
 }
 
-// Funktion zum Speichern einer Klassifizierung in der Datenbank
+// Anpassung der fillTable() Funktion
+function fillTable(tableId, data) {
+  let tableBody = document.getElementById(tableId);
+  tableBody.innerHTML = ''; // Tabelle leeren
+
+  data.slice(-3).forEach(item => {
+    let row = tableBody.insertRow();
+    let thumbnailCell = row.insertCell(0);
+    let labelCell = row.insertCell(1);
+    let confidenceCell = row.insertCell(2);
+
+    thumbnailCell.innerHTML = `<img src="${item.thumbnailUrl}" width="100">`;
+    labelCell.textContent = item.label;
+    // Confidence als Balkendiagramm mit Prozentzahl darstellen
+    confidenceCell.innerHTML = `<div style="width: ${item.confidence}% ; border: 1px solid black; background-color: lightgray;">${nf(item.confidence, 0, 2)}%</div>`;
+  });
+}
+
 function saveClassification(isCorrect, resultDiv, img) {
-  if (img) {
+  if (img && resultDiv) { // Überprüfe, ob sowohl img als auch resultDiv vorhanden sind
     let data = {
       label: resultDiv.elt.textContent.split(':')[1].trim(),
       confidence: parseFloat(resultDiv.elt.textContent.split(':')[3].trim()),
@@ -98,10 +119,9 @@ function saveClassification(isCorrect, resultDiv, img) {
     classifications.push(data);
     localStorage.setItem(classificationsKey, JSON.stringify(classifications));
 
-    // Aktualisiere die Tabellen mit den letzten Klassifizierungen
     loadLastClassifications();
   } else {
-    console.log('Es wurde noch kein Bild hochgeladen.'); // Falls hier immer noch eine Fehlermeldung angezeigt wird, überprüfe deine Anwendung auf weitere Probleme.
+    console.log('Es wurde noch kein Bild hochgeladen.');
   }
 }
 
