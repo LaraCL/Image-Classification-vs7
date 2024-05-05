@@ -73,7 +73,8 @@ function gotResult(error, results) {
   }
 }
 
-function saveClassification(isCorrect) {
+// Funktion zum Speichern einer Klassifizierung in der Datenbank
+function saveClassification(isCorrect, resultDiv, img) {
   if (img) {
     let data = {
       label: resultDiv.elt.textContent.split(':')[1].trim(),
@@ -87,6 +88,7 @@ function saveClassification(isCorrect) {
     classifications.push(data);
     localStorage.setItem(classificationsKey, JSON.stringify(classifications));
 
+    // Aktualisiere die Tabellen mit den letzten Klassifizierungen
     loadLastClassifications();
   } else {
     console.log('Es wurde noch kein Bild hochgeladen.'); // Falls hier immer noch eine Fehlermeldung angezeigt wird, überprüfe deine Anwendung auf weitere Probleme.
