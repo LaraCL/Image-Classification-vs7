@@ -106,7 +106,7 @@ function fillTable(tableId, data) {
 }
 
 function saveClassification(isCorrect, resultDiv, img) {
-  if (img && img.elt && resultDiv && resultDiv.elt) { // Überprüfen, ob img und resultDiv definiert sind
+  if (img && img.elt && resultDiv && resultDiv.elt && resultDiv.elt.textContent) { // Überprüfen, ob img und resultDiv definiert sind
     let label = resultDiv.elt.textContent.split(':')[1];
     let confidence = resultDiv.elt.textContent.split(':')[3];
     if (label && confidence) {
@@ -130,6 +130,7 @@ function saveClassification(isCorrect, resultDiv, img) {
     console.log('Bild oder Ergebnisdiv wurde nicht gefunden.');
   }
 }
+
 
 
 // Neue Funktion zur Anzeige des Thumbnails
