@@ -43,6 +43,8 @@ function gotFile(file) {
       let y = dropY + (dropZone.height - thumbnailSize) / 2;
       img.size(thumbnailSize, thumbnailSize);
       img.position(x, y);
+      // Anzeigen des Thumbnails vor der Klassifizierung
+      showThumbnail(img);
     });
   } else {
     console.log('Es wurde keine Bilddatei hochgeladen.');
@@ -61,13 +63,13 @@ function gotResult(error, results) {
   if (error) {
     console.error(error);
   } else {
-    resultDiv.html(`<strong>Label:</strong> ${results[0].label}<br><strong>Confidence:</strong> ${nf(results[0].confidence * 100, 0, 2)}%`);
+    let confidence = results[0].confidence * 100;
+    resultDiv.html(`<strong>Label:</strong> ${results[0].label}<br><strong>Confidence:</strong> ${nf(confidence, 0, 2)}%`);
 
-    let thumbnailElement = select('#thumbnail');
-    thumbnailElement.html('');
-    img.show();
-    img.size(200, 200);
-    img.parent('thumbnail');
+    // Confidence als Balkendiagramm darstellen
+    showConfidenceBar(confidence);
+    
+    // Restlicher Code...
   }
 }
 
@@ -91,14 +93,35 @@ function saveClassification(isCorrect) {
   }
 }
 
+// Neue Funktion zur Anzeige des Thumbnails
+function showThumbnail(img) {
+  let thumbnailElement = select('#thumbnail');
+  thumbnailElement.html('');
+  img.show();
+  img.size(200, 200);
+  img.parent('thumbnail');
+}
+
+// Neue Funktion zur Darstellung der Confidence als Balkendiagramm
+function showConfidenceBar(confidence) {
+  let confidenceBar = createDiv('');
+  confidenceBar.size(400, 20);
+  confidenceBar.style('border', '1px solid black');
+  confidenceBar.style('background-color', 'lightgray');
+  confidenceBar.position(dropZone.position().x, dropZone.position().y + dropZone.height + 10);
+  confidenceBar.child(createDiv('').size(confidence * 4, 20).style('background-color', 'green'));
+}
+
+// Drag-and-Drop-Stilfunktionen
 function highlight() {
-  dropZone.style('background-color', '#eee');
+  select('#drop_zone').style('background-color', '#eee');
 }
 
 function unhighlight() {
-  dropZone.style('background-color', '');
+  select('#drop_zone').style('background-color', '');
 }
 
+// Verhindern des Standardverhaltens beim Drag-and-Drop
 window.ondragover = function (e) {
   e.preventDefault();
   return false;
@@ -109,4 +132,5 @@ window.ondrop = function (e) {
   return false;
 };
 
+// Laden der letzten Klassifizierungen beim Laden der Seite
 window.onload = loadLastClassifications;
