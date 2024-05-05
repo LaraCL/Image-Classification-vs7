@@ -53,7 +53,17 @@ function gotFile(file) {
 
 function classifyImage() {
   if (img) {
-    classifier.classify(img.elt, gotResult);
+    classifier.classify(img.elt, (error, results) => {
+      if (error) {
+        console.error(error);
+      } else {
+        gotResult(error, results);
+        // Füge die Überprüfung und das Abspeichern hinzu
+        if (resultDiv && img) {
+          saveClassification(results[0].label === 'richtig', resultDiv, img);
+        }
+      }
+    });
   } else {
     console.log('Es wurde noch kein Bild hochgeladen.');
   }
