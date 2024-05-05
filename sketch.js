@@ -106,24 +106,31 @@ function fillTable(tableId, data) {
 }
 
 function saveClassification(isCorrect, resultDiv, img) {
-  if (img && resultDiv) { // Überprüfe, ob sowohl img als auch resultDiv vorhanden sind
-    let data = {
-      label: resultDiv.elt.textContent.split(':')[1].trim(),
-      confidence: parseFloat(resultDiv.elt.textContent.split(':')[3].trim()),
-      thumbnailUrl: img.elt.src,
-      isCorrect: isCorrect
-    };
+  if (img && img.elt && resultDiv && resultDiv.elt) { // Überprüfen, ob img und resultDiv definiert sind
+    let label = resultDiv.elt.textContent.split(':')[1];
+    let confidence = resultDiv.elt.textContent.split(':')[3];
+    if (label && confidence) {
+      let data = {
+        label: label.trim(),
+        confidence: parseFloat(confidence.trim()),
+        thumbnailUrl: img.elt.src,
+        isCorrect: isCorrect
+      };
 
-    let classificationsKey = isCorrect ? 'correctClassifications' : 'incorrectClassifications';
-    let classifications = JSON.parse(localStorage.getItem(classificationsKey)) || [];
-    classifications.push(data);
-    localStorage.setItem(classificationsKey, JSON.stringify(classifications));
+      let classificationsKey = isCorrect ? 'correctClassifications' : 'incorrectClassifications';
+      let classifications = JSON.parse(localStorage.getItem(classificationsKey)) || [];
+      classifications.push(data);
+      localStorage.setItem(classificationsKey, JSON.stringify(classifications));
 
-    loadLastClassifications();
+      loadLastClassifications();
+    } else {
+      console.log('Fehler beim Lesen des Labels oder der Confidence.');
+    }
   } else {
-    console.log('Es wurde noch kein Bild hochgeladen.');
+    console.log('Bild oder Ergebnisdiv wurde nicht gefunden.');
   }
 }
+
 
 // Neue Funktion zur Anzeige des Thumbnails
 function showThumbnail(img) {
