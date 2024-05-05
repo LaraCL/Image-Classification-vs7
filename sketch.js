@@ -33,7 +33,7 @@ function setup() {
 }
 
 function gotFile(file) {
-  if (file && file.type === 'image') { // Überprüfen, ob eine Datei vorhanden ist und ob es sich um eine Bilddatei handelt
+  if (file && file.type === 'image') {
     img = createImg(file.data, 'Uploaded Image', '', () => {
       img.hide();
       let thumbnailSize = 200;
@@ -68,6 +68,12 @@ function gotResult(error, results) {
 
     // Anzeige des Balkendiagramms mit Prozentzahl
     showConfidenceBar(confidence);
+
+    // Jetzt, wo die Klassifizierung abgeschlossen ist und das Ergebnisdiv und das Bildobjekt definiert sind,
+    // rufen wir die Funktion saveClassification() auf.
+    if (resultDiv && img) {
+      saveClassification(true);
+    }
   }
 }
 
