@@ -33,7 +33,7 @@ function setup() {
 }
 
 function gotFile(file) {
-  if (file.type === 'image') {
+  if (file && file.type === 'image') { // Überprüfen, ob eine Datei vorhanden ist und ob es sich um eine Bilddatei handelt
     img = createImg(file.data, 'Uploaded Image', '', () => {
       img.hide();
       let thumbnailSize = 200;
@@ -53,17 +53,7 @@ function gotFile(file) {
 
 function classifyImage() {
   if (img) {
-    classifier.classify(img.elt, (error, results) => {
-      if (error) {
-        console.error(error);
-      } else {
-        gotResult(error, results);
-        // Füge die Überprüfung und das Abspeichern hinzu
-        if (resultDiv && img) {
-          saveClassification(results[0].label === 'richtig', resultDiv, img);
-        }
-      }
-    });
+    classifier.classify(img.elt, gotResult);
   } else {
     console.log('Es wurde noch kein Bild hochgeladen.');
   }
@@ -76,62 +66,10 @@ function gotResult(error, results) {
     let confidence = results[0].confidence * 100;
     resultDiv.html(`<strong>Label:</strong> ${results[0].label}<br><strong>Confidence:</strong> ${nf(confidence, 0, 2)}%`);
 
-    // Confidence als Balkendiagramm darstellen
-    showConfidenceBar(confidence);
-    
     // Anzeige des Balkendiagramms mit Prozentzahl
-    let confidenceString = nf(confidence, 0, 2) + '%';
-    let confidenceDiv = createDiv(confidenceString);
-    confidenceDiv.position(dropZone.position().x + 200, dropZone.position().y + dropZone.height + 10);
-    confidenceDiv.style('text-align', 'center');
+    showConfidenceBar(confidence);
   }
 }
-
-// Anpassung der fillTable() Funktion
-function fillTable(tableId, data) {
-  let tableBody = document.getElementById(tableId);
-  tableBody.innerHTML = ''; // Tabelle leeren
-
-  data.slice(-3).forEach(item => {
-    let row = tableBody.insertRow();
-    let thumbnailCell = row.insertCell(0);
-    let labelCell = row.insertCell(1);
-    let confidenceCell = row.insertCell(2);
-
-    thumbnailCell.innerHTML = `<img src="${item.thumbnailUrl}" width="100">`;
-    labelCell.textContent = item.label;
-    // Confidence als Balkendiagramm mit Prozentzahl darstellen
-    confidenceCell.innerHTML = `<div style="width: ${item.confidence}% ; border: 1px solid black; background-color: lightgray;">${nf(item.confidence, 0, 2)}%</div>`;
-  });
-}
-
-function saveClassification(isCorrect, resultDiv, img) {
-  if (img && img.elt && resultDiv && resultDiv.elt && resultDiv.elt.textContent) { // Überprüfen, ob img und resultDiv definiert sind
-    let label = resultDiv.elt.textContent.split(':')[1];
-    let confidence = resultDiv.elt.textContent.split(':')[3];
-    if (label && confidence) {
-      let data = {
-        label: label.trim(),
-        confidence: parseFloat(confidence.trim()),
-        thumbnailUrl: img.elt.src,
-        isCorrect: isCorrect
-      };
-
-      let classificationsKey = isCorrect ? 'correctClassifications' : 'incorrectClassifications';
-      let classifications = JSON.parse(localStorage.getItem(classificationsKey)) || [];
-      classifications.push(data);
-      localStorage.setItem(classificationsKey, JSON.stringify(classifications));
-
-      loadLastClassifications();
-    } else {
-      console.log('Fehler beim Lesen des Labels oder der Confidence.');
-    }
-  } else {
-    console.log('Bild oder Ergebnisdiv wurde nicht gefunden.');
-  }
-}
-
-
 
 // Neue Funktion zur Anzeige des Thumbnails
 function showThumbnail(img) {
