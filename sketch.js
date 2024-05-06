@@ -89,11 +89,21 @@ function showThumbnail(img) {
 // Neue Funktion zur Darstellung der Confidence als Balkendiagramm
 function showConfidenceBar(confidence) {
   let confidenceBar = createDiv('');
-  confidenceBar.size(400, 20);
+  confidenceBar.style('position', 'absolute');
+  confidenceBar.style('bottom', '10px');
+  confidenceBar.style('left', '0px');
+  confidenceBar.style('width', '100%');
+  confidenceBar.style('height', '20px');
   confidenceBar.style('border', '1px solid black');
   confidenceBar.style('background-color', 'lightgray');
-  confidenceBar.position(dropZone.position().x, dropZone.position().y + dropZone.height + 10);
-  confidenceBar.child(createDiv('').size(confidence * 4, 20).style('background-color', 'green'));
+  confidenceBar.style('z-index', '10'); // Stellen Sie sicher, dass die Bar über dem Text liegt
+  confidenceBar.parent('drop_zone'); // Das Elternelement für die Positionierung festlegen
+  
+  let progressBar = createDiv('');
+  progressBar.style('width', confidence * 4 + 'px');
+  progressBar.style('height', '20px');
+  progressBar.style('background-color', 'green');
+  confidenceBar.child(progressBar);
 }
 
 // Funktion zum Speichern einer Klassifizierung in der Datenbank
