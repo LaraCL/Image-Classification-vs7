@@ -8,7 +8,16 @@
   <script src="util.js"></script>
   <script src="sketch.js"></script>
   <style>
-    /* Stildefinitionen für die Drag-and-Drop-Zone */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+    }
+    h1, h2 {
+      color: #444;
+    }
     #drop_zone {
       width: 400px;
       height: 200px;
@@ -16,24 +25,24 @@
       padding: 20px;
       text-align: center;
       margin-top: 20px;
-      font-family: Arial, sans-serif;
-      font-size: 16px;
-      color: #aaa;
+      position: relative; /* Position relativ für absolute Kinderelemente */
     }
-    /* Stildefinitionen für die Thumbnail-Anzeige */
-    #thumbnail {
+    #thumbnail, #result {
       margin-top: 20px;
       text-align: center;
     }
-    /* Stildefinitionen für die Ergebnisanzeige */
-    #result {
-      margin-top: 20px;
-    }
-    /* Stildefinitionen für die Buttons */
     button {
       margin-top: 10px;
+      padding: 8px 16px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
     }
-    /* Stildefinitionen für die Tabellen */
+    button:hover {
+      background-color: #0056b3;
+    }
     table {
       border-collapse: collapse;
       width: 100%;
@@ -51,9 +60,6 @@
 </head>
 <body>
   <h1>Drag and Drop Image Classification</h1>
-
-  <!-- Tabellen für die letzten Klassifizierungen -->
-  <h2>Zuletzt korrekt klassifizierte Fälle</h2>
   <table id="correctTable">
     <thead>
       <tr>
@@ -64,7 +70,6 @@
     </thead>
     <tbody id="correctBody"></tbody>
   </table>
-  <h2>Zuletzt falsch klassifizierte Fälle</h2>
   <table id="incorrectTable">
     <thead>
       <tr>
@@ -75,28 +80,21 @@
     </thead>
     <tbody id="incorrectBody"></tbody>
   </table>
-
-  <!-- Drag-and-Drop-Zone -->
   <div id="drop_zone" ondragover="event.preventDefault()" ondrop="gotFile(event)">
     <p>Drag and Drop</p>
   </div>
-
-  <!-- Thumbnail-Anzeige -->
   <div id="thumbnail"></div>
-
-  <!-- Ergebnisanzeige -->
   <div id="result"></div>
-  
-  <!-- Buttons für die Klassifizierung -->
   <button id="classifyButton">Klassifizieren</button>
   <button id="correctButton" style="display: none;">Richtig klassifiziert</button>
   <button id="incorrectButton" style="display: none;">Falsch klassifiziert</button>
+
 
 <h1>Projektdiskussion und Technische Details</h1>
     <h2>1) Diskussion der Ergebnisse</h2>
     <p>Bei der Anwendung von ml5.js zur Bildklassifikation auf mehreren selbst erstellten Webseiten wurden eigene Tierfotos getestet. Es wurde festgestellt, dass die Klassifikationsgenauigkeit je nach Bildkomplexität variierte. Fotos von Katzen wurden mit einer höheren Wahrscheinlichkeit korrekt klassifiziert, während komplexere Fotos mit vielen Details oder schlechter Beleuchtung häufiger falsch zugeordnet wurden. Diese Ergebnisse deuten darauf hin, dass die Leistung des Modells von der Bildqualität und den auf dem Bild präsentierten Merkmalen abhängt. Es wurde beobachtet, dass die Präzision des Modells sinkt, wenn die Fotos von den in den Trainingsdaten enthaltenen Bildern abweichen, was die Wichtigkeit einer vielfältigen und repräsentativen Trainingsdatenbasis unterstreicht. Es ist wichtig zu betonen, dass keine einzelne Seite den gesamten Umfang der Optimierungsversuche darstellt, da die Anwendung mehrfach optimiert und auf neuen Seiten getestet wurde.</p>
     <h2>2) Technische Beschreibung</h2>
-    <p>Für die Implementierung der Bildklassifikationsseite wurde das Framework ml5.js verwendet, das auf TensorFlow.js basiert und das maschinelle Lernen im Browser ermöglicht. Zusätzlich wurde p5.js für das Benutzerinterface und die Drag-and-Drop-Funktionalität eingesetzt. Diese Frameworks wurden gewählt, da sie eine einfache und effektive Integration von maschinellem Lernen in Webanwendungen ohne tiefgreifende technische Vorkenntnisse ermöglichen. Die technische Herausforderung bestand darin, ein vortrainiertes Modell zu nutzen, das möglicherweise nicht optimal auf alle Arten von Tierfotos abgestimmt ist, insbesondere wenn diese von den typischen Trainingsdaten abweichen. Die Anwendung wurde fortlaufend optimiert und auf neuen Seiten getestet, um die Effektivität der Klassifikation zu verbessern.</p>
+    <p>Für die Implementierung der Bildklassifikationsseite wurde das Framework ml5.js mittels Image-Classification-Tutorial verwendet, das auf TensorFlow.js basiert und das maschinelle Lernen im Browser ermöglicht. Zusätzlich wurde p5.js für das Benutzerinterface und die Drag-and-Drop-Funktionalität eingesetzt. Diese Frameworks wurden gewählt, da sie eine einfache und effektive Integration von maschinellem Lernen in Webanwendungen ohne tiefgreifende technische Vorkenntnisse ermöglichen. Die technische Herausforderung bestand darin, ein vortrainiertes Modell zu nutzen, das möglicherweise nicht optimal auf alle Arten von Tierfotos abgestimmt ist, insbesondere wenn diese von den typischen Trainingsdaten abweichen. Die Anwendung wurde fortlaufend optimiert und auf neuen Seiten getestet, um die Effektivität der Klassifikation zu verbessern.</p>
     <h2>3) Fachliche Erläuterung der Implementierung</h2>
     <p>Es wurde eine Webseite entwickelt, auf der Nutzer Bilder ihrer Tiere per Drag-and-Drop hochladen können, die anschließend mithilfe eines vortrainierten MobileNet-Modells von ml5.js klassifiziert werden. Die Ergebnisse der Klassifikation werden sofort angezeigt und Nutzer können ihre Richtigkeit bestätigen. Diese Interaktion ermöglicht es, direktes Benutzerfeedback zu sammeln, welches für die Weiterbildung und Feinabstimmung des Modells genutzt werden könnte. Die größte fachliche Herausforderung liegt darin, die Generalisierungsfähigkeit des Modells zu verbessern, damit es auch auf weniger typische oder qualitativ variierende Bilder präzise reagieren kann. Um diese Herausforderung zu meistern, wurde die Anwendung mehrfach optimiert und auf unterschiedlichen Seiten getestet, was zu einer fortlaufenden Verbesserung der Klassifikationsgenauigkeit führte.</p>
 
