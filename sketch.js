@@ -88,22 +88,26 @@ function showThumbnail(img) {
 
 // Neue Funktion zur Darstellung der Confidence als Balkendiagramm
 function showConfidenceBar(confidence) {
-  let confidenceBar = createDiv('');
-  confidenceBar.style('position', 'absolute');
-  confidenceBar.style('bottom', '10px');
-  confidenceBar.style('left', '0px');
-  confidenceBar.style('width', '100%');
-  confidenceBar.style('height', '20px');
-  confidenceBar.style('border', '1px solid black');
-  confidenceBar.style('background-color', 'lightgray');
-  confidenceBar.style('z-index', '10'); // Stellen Sie sicher, dass die Bar über dem Text liegt
-  confidenceBar.parent('drop_zone'); // Das Elternelement für die Positionierung festlegen
-  
-  let progressBar = createDiv('');
-  progressBar.style('width', confidence * 4 + 'px');
-  progressBar.style('height', '20px');
-  progressBar.style('background-color', 'green');
-  confidenceBar.child(progressBar);
+    // Berechne die Position direkt unter der Drop-Zone
+    let dropZoneHeight = dropZone.height; // Höhe der Drop-Zone
+    let dropZoneTop = dropZone.position().y; // Y-Position der Drop-Zone
+    let newBarYPosition = dropZoneTop + dropZoneHeight + 10; // Positioniere die Bar 10px unter der Drop-Zone
+
+    let confidenceBar = createDiv('');
+    confidenceBar.style('position', 'absolute');
+    confidenceBar.style('top', newBarYPosition + 'px'); // Setze die Y-Position
+    confidenceBar.style('left', dropZone.position().x + 'px'); // Setze die X-Position auf die der Drop-Zone
+    confidenceBar.style('width', '400px'); // Breite entsprechend Drop-Zone
+    confidenceBar.style('height', '20px');
+    confidenceBar.style('border', '1px solid black');
+    confidenceBar.style('background-color', 'lightgray');
+    confidenceBar.parent(dropZone.parent()); // Elternelement der Drop-Zone für relative Positionierung
+
+    let progressBar = createDiv('');
+    progressBar.style('width', confidence * 4 + 'px'); // Skalierung der Breite basierend auf Confidence
+    progressBar.style('height', '20px');
+    progressBar.style('background-color', 'green');
+    confidenceBar.child(progressBar);
 }
 
 // Funktion zum Speichern einer Klassifizierung in der Datenbank
